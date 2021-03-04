@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Page module upgrade code
+ * pdf module upgrade code
  *
  * This file keeps track of upgrades to
  * the resource module
@@ -37,14 +37,14 @@
  * Please do not forget to use upgrade_set_timeout()
  * before any action that may take longer time to finish.
  *
- * @package mod_page
+ * @package mod_pdf
  * @copyright  2009 Petr Skoda (http://skodak.org)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die;
 
-function xmldb_page_upgrade($oldversion) {
+function xmldb_pdf_upgrade($oldversion) {
     global $CFG;
 
     // Automatically generated Moodle v3.5.0 release upgrade line.

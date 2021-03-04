@@ -16,9 +16,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * List of all pages in course
+ * List of all pdfs in course
  *
- * @package mod_page
+ * @package mod_pdf
  * @copyright  1999 onwards Martin Dougiamas (http://dougiamas.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -30,27 +30,27 @@ $id = required_param('id', PARAM_INT); // course id
 $course = $DB->get_record('course', array('id'=>$id), '*', MUST_EXIST);
 
 require_course_login($course, true);
-$PAGE->set_pagelayout('incourse');
+$PAGE->set_pdflayout('incourse');
 
 // Trigger instances list viewed event.
-$event = \mod_page\event\course_module_instance_list_viewed::create(array('context' => context_course::instance($course->id)));
+$event = \mod_pdf\event\course_module_instance_list_viewed::create(array('context' => context_course::instance($course->id)));
 $event->add_record_snapshot('course', $course);
 $event->trigger();
 
-$strpage         = get_string('modulename', 'page');
-$strpages        = get_string('modulenameplural', 'page');
+$strpdf         = get_string('modulename', 'pdf');
+$strpdfs        = get_string('modulenameplural', 'pdf');
 $strname         = get_string('name');
 $strintro        = get_string('moduleintro');
 $strlastmodified = get_string('lastmodified');
 
-$PAGE->set_url('/mod/page/index.php', array('id' => $course->id));
-$PAGE->set_title($course->shortname.': '.$strpages);
+$PAGE->set_url('/mod/pdf/index.php', array('id' => $course->id));
+$PAGE->set_title($course->shortname.': '.$strpdfs);
 $PAGE->set_heading($course->fullname);
-$PAGE->navbar->add($strpages);
+$PAGE->navbar->add($strpdfs);
 echo $OUTPUT->header();
-echo $OUTPUT->heading($strpages);
-if (!$pages = get_all_instances_in_course('page', $course)) {
-    notice(get_string('thereareno', 'moodle', $strpages), "$CFG->wwwroot/course/view.php?id=$course->id");
+echo $OUTPUT->heading($strpdfs);
+if (!$pdfs = get_all_instances_in_course('pdf', $course)) {
+    notice(get_string('thereareno', 'moodle', $strpdfs), "$CFG->wwwroot/course/view.php?id=$course->id");
     exit;
 }
 
@@ -70,29 +70,29 @@ if ($usesections) {
 
 $modinfo = get_fast_modinfo($course);
 $currentsection = '';
-foreach ($pages as $page) {
-    $cm = $modinfo->cms[$page->coursemodule];
+foreach ($pdfs as $pdf) {
+    $cm = $modinfo->cms[$pdf->coursemodule];
     if ($usesections) {
         $printsection = '';
-        if ($page->section !== $currentsection) {
-            if ($page->section) {
-                $printsection = get_section_name($course, $page->section);
+        if ($pdf->section !== $currentsection) {
+            if ($pdf->section) {
+                $printsection = get_section_name($course, $pdf->section);
             }
             if ($currentsection !== '') {
                 $table->data[] = 'hr';
             }
-            $currentsection = $page->section;
+            $currentsection = $pdf->section;
         }
     } else {
-        $printsection = '<span class="smallinfo">'.userdate($page->timemodified)."</span>";
+        $printsection = '<span class="smallinfo">'.userdate($pdf->timemodified)."</span>";
     }
 
-    $class = $page->visible ? '' : 'class="dimmed"'; // hidden modules are dimmed
+    $class = $pdf->visible ? '' : 'class="dimmed"'; // hidden modules are dimmed
 
     $table->data[] = array (
         $printsection,
-        "<a $class href=\"view.php?id=$cm->id\">".format_string($page->name)."</a>",
-        format_module_intro('page', $page, $cm->id));
+        "<a $class href=\"view.php?id=$cm->id\">".format_string($pdf->name)."</a>",
+        format_module_intro('pdf', $pdf, $cm->id));
 }
 
 echo html_writer::table($table);

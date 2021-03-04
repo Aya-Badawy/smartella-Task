@@ -16,9 +16,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Defines backup_page_activity_task class
+ * Defines backup_pdf_activity_task class
  *
- * @package   mod_page
+ * @package   mod_pdf
  * @category  backup
  * @copyright 2010 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -26,12 +26,12 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-require_once($CFG->dirroot . '/mod/page/backup/moodle2/backup_page_stepslib.php');
+require_once($CFG->dirroot . '/mod/pdf/backup/moodle2/backup_pdf_stepslib.php');
 
 /**
- * Provides the steps to perform one complete backup of the Page instance
+ * Provides the steps to perform one complete backup of the pdf instance
  */
-class backup_page_activity_task extends backup_activity_task {
+class backup_pdf_activity_task extends backup_activity_task {
 
     /**
      * No specific settings for this activity
@@ -40,10 +40,10 @@ class backup_page_activity_task extends backup_activity_task {
     }
 
     /**
-     * Defines a backup step to store the instance data in the page.xml file
+     * Defines a backup step to store the instance data in the pdf.xml file
      */
     protected function define_my_steps() {
-        $this->add_step(new backup_page_activity_structure_step('page_structure', 'page.xml'));
+        $this->add_step(new backup_pdf_activity_structure_step('pdf_structure', 'pdf.xml'));
     }
 
     /**
@@ -57,13 +57,13 @@ class backup_page_activity_task extends backup_activity_task {
 
         $base = preg_quote($CFG->wwwroot,"/");
 
-        // Link to the list of pages
-        $search="/(".$base."\/mod\/page\/index.php\?id\=)([0-9]+)/";
-        $content= preg_replace($search, '$@PAGEINDEX*$2@$', $content);
+        // Link to the list of pdfs
+        $search="/(".$base."\/mod\/pdf\/index.php\?id\=)([0-9]+)/";
+        $content= preg_replace($search, '$@pdfINDEX*$2@$', $content);
 
-        // Link to page view by moduleid
-        $search="/(".$base."\/mod\/page\/view.php\?id\=)([0-9]+)/";
-        $content= preg_replace($search, '$@PAGEVIEWBYID*$2@$', $content);
+        // Link to pdf view by moduleid
+        $search="/(".$base."\/mod\/pdf\/view.php\?id\=)([0-9]+)/";
+        $content= preg_replace($search, '$@pdfVIEWBYID*$2@$', $content);
 
         return $content;
     }

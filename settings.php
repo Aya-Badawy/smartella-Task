@@ -16,9 +16,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Page module admin settings and defaults
+ * pdf module admin settings and defaults
  *
- * @package mod_page
+ * @package mod_pdf
  * @copyright  2009 Petr Skoda (http://skodak.org)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -32,23 +32,23 @@ if ($ADMIN->fulltree) {
     $defaultdisplayoptions = array(RESOURCELIB_DISPLAY_OPEN);
 
     //--- general settings -----------------------------------------------------------------------------------
-    $settings->add(new admin_setting_configmultiselect('page/displayoptions',
-        get_string('displayoptions', 'page'), get_string('configdisplayoptions', 'page'),
+    $settings->add(new admin_setting_configmultiselect('pdf/displayoptions',
+        get_string('displayoptions', 'pdf'), get_string('configdisplayoptions', 'pdf'),
         $defaultdisplayoptions, $displayoptions));
 
     //--- modedit defaults -----------------------------------------------------------------------------------
-    $settings->add(new admin_setting_heading('pagemodeditdefaults', get_string('modeditdefaults', 'admin'), get_string('condifmodeditdefaults', 'admin')));
+    $settings->add(new admin_setting_heading('pdfmodeditdefaults', get_string('modeditdefaults', 'admin'), get_string('condifmodeditdefaults', 'admin')));
 
-    $settings->add(new admin_setting_configcheckbox('page/printheading',
-        get_string('printheading', 'page'), get_string('printheadingexplain', 'page'), 1));
-    $settings->add(new admin_setting_configcheckbox('page/printintro',
-        get_string('printintro', 'page'), get_string('printintroexplain', 'page'), 0));
-    $settings->add(new admin_setting_configcheckbox('page/printlastmodified',
-        get_string('printlastmodified', 'page'), get_string('printlastmodifiedexplain', 'page'), 1));
-    $settings->add(new admin_setting_configselect('page/display',
-        get_string('displayselect', 'page'), get_string('displayselectexplain', 'page'), RESOURCELIB_DISPLAY_OPEN, $displayoptions));
-    $settings->add(new admin_setting_configtext('page/popupwidth',
-        get_string('popupwidth', 'page'), get_string('popupwidthexplain', 'page'), 620, PARAM_INT, 7));
-    $settings->add(new admin_setting_configtext('page/popupheight',
-        get_string('popupheight', 'page'), get_string('popupheightexplain', 'page'), 450, PARAM_INT, 7));
+    $settings->add(new admin_setting_configcheckbox('pdf/printheading',
+        get_string('printheading', 'pdf'), get_string('printheadingexplain', 'pdf'), 1));
+    $settings->add(new admin_setting_configcheckbox('pdf/printintro',
+        get_string('printintro', 'pdf'), get_string('printintroexplain', 'pdf'), 0));
+    $settings->add(new admin_setting_configcheckbox('pdf/printlastmodified',
+        get_string('printlastmodified', 'pdf'), get_string('printlastmodifiedexplain', 'pdf'), 1));
+    $settings->add(new admin_setting_configselect('pdf/display',
+        get_string('displayselect', 'pdf'), get_string('displayselectexplain', 'pdf'), RESOURCELIB_DISPLAY_OPEN, $displayoptions));
+    $settings->add(new admin_setting_configtext('pdf/popupwidth',
+        get_string('popupwidth', 'pdf'), get_string('popupwidthexplain', 'pdf'), 620, PARAM_INT, 7));
+    $settings->add(new admin_setting_configtext('pdf/popupheight',
+        get_string('popupheight', 'pdf'), get_string('popupheightexplain', 'pdf'), 450, PARAM_INT, 7));
 }

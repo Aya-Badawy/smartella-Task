@@ -16,31 +16,31 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   mod_page
+ * @package   mod_pdf
  * @category  backup
  * @copyright 2010 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 /**
- * Define all the restore steps that will be used by the restore_page_activity_task
+ * Define all the restore steps that will be used by the restore_pdf_activity_task
  */
 
 /**
- * Structure step to restore one page activity
+ * Structure step to restore one pdf activity
  */
-class restore_page_activity_structure_step extends restore_activity_structure_step {
+class restore_pdf_activity_structure_step extends restore_activity_structure_step {
 
     protected function define_structure() {
 
         $paths = array();
-        $paths[] = new restore_path_element('page', '/activity/page');
+        $paths[] = new restore_path_element('pdf', '/activity/pdf');
 
         // Return the paths wrapped into standard activity structure
         return $this->prepare_activity_structure($paths);
     }
 
-    protected function process_page($data) {
+    protected function process_pdf($data) {
         global $DB;
 
         $data = (object)$data;
@@ -50,15 +50,15 @@ class restore_page_activity_structure_step extends restore_activity_structure_st
         // Any changes to the list of dates that needs to be rolled should be same during course restore and course reset.
         // See MDL-9367.
 
-        // insert the page record
-        $newitemid = $DB->insert_record('page', $data);
+        // insert the pdf record
+        $newitemid = $DB->insert_record('pdf', $data);
         // immediately after inserting "activity" record, call this
         $this->apply_activity_instance($newitemid);
     }
 
     protected function after_execute() {
-        // Add page related files, no need to match by itemname (just internally handled context)
-        $this->add_related_files('mod_page', 'intro', null);
-        $this->add_related_files('mod_page', 'content', null);
+        // Add pdf related files, no need to match by itemname (just internally handled context)
+        $this->add_related_files('mod_pdf', 'intro', null);
+        $this->add_related_files('mod_pdf', 'content', null);
     }
 }

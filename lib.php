@@ -16,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package mod_page
+ * @package mod_pdf
  * @copyright  2009 Petr Skoda (http://skodak.org)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -24,11 +24,11 @@
 defined('MOODLE_INTERNAL') || die;
 
 /**
- * List of features supported in Page module
+ * List of features supported in pdf module
  * @param string $feature FEATURE_xx constant for requested feature
  * @return mixed True if module supports feature, false if not, null if doesn't know
  */
-function page_supports($feature) {
+function pdf_supports($feature) {
     switch($feature) {
         case FEATURE_MOD_ARCHETYPE:           return MOD_ARCHETYPE_RESOURCE;
         case FEATURE_GROUPS:                  return false;
@@ -49,7 +49,7 @@ function page_supports($feature) {
  * @param $data the data submitted from the reset course.
  * @return array status array
  */
-function page_reset_userdata($data) {
+function pdf_reset_userdata($data) {
 
     // Any changes to the list of dates that needs to be rolled should be same during course restore and course reset.
     // See MDL-9367.
@@ -67,7 +67,7 @@ function page_reset_userdata($data) {
  *
  * @return array
  */
-function page_get_view_actions() {
+function pdf_get_view_actions() {
     return array('view','view all');
 }
 
@@ -81,17 +81,17 @@ function page_get_view_actions() {
  *
  * @return array
  */
-function page_get_post_actions() {
+function pdf_get_post_actions() {
     return array('update', 'add');
 }
 
 /**
- * Add page instance.
+ * Add pdf instance.
  * @param stdClass $data
- * @param mod_page_mod_form $mform
- * @return int new page instance id
+ * @param mod_pdf_mod_form $mform
+ * @return int new pdf instance id
  */
-function page_add_instance($data, $mform = null) {
+function pdf_add_instance($data, $mform = null) {
     global $CFG, $DB;
     require_once("$CFG->libdir/resourcelib.php");
 
@@ -109,40 +109,40 @@ function page_add_instance($data, $mform = null) {
     $data->displayoptions = serialize($displayoptions);
 
     if ($mform) {
-        $data->content       = $data->page['text'];
-        $data->contentformat = $data->page['format'];
+        $data->content       = $data->pdf['text'];
+        $data->contentformat = $data->pdf['format'];
     }
 
-    $data->id = $DB->insert_record('page', $data);
+    $data->id = $DB->insert_record('pdf', $data);
 
     // we need to use context now, so we need to make sure all needed info is already in db
     $DB->set_field('course_modules', 'instance', $data->id, array('id'=>$cmid));
     $context = context_module::instance($cmid);
 
-    if ($mform and !empty($data->page['itemid'])) {
-        $draftitemid = $data->page['itemid'];
-        $data->content = file_save_draft_area_files($draftitemid, $context->id, 'mod_page', 'content', 0, page_get_editor_options($context), $data->content);
-        $DB->update_record('page', $data);
+    if ($mform and !empty($data->pdf['itemid'])) {
+        $draftitemid = $data->pdf['itemid'];
+        $data->content = file_save_draft_area_files($draftitemid, $context->id, 'mod_pdf', 'content', 0, pdf_get_editor_options($context), $data->content);
+        $DB->update_record('pdf', $data);
     }
 
     $completiontimeexpected = !empty($data->completionexpected) ? $data->completionexpected : null;
-    \core_completion\api::update_completion_date_event($cmid, 'page', $data->id, $completiontimeexpected);
+    \core_completion\api::update_completion_date_event($cmid, 'pdf', $data->id, $completiontimeexpected);
 
     return $data->id;
 }
 
 /**
- * Update page instance.
+ * Update pdf instance.
  * @param object $data
  * @param object $mform
  * @return bool true
  */
-function page_update_instance($data, $mform) {
+function pdf_update_instance($data, $mform) {
     global $CFG, $DB;
     require_once("$CFG->libdir/resourcelib.php");
 
     $cmid        = $data->coursemodule;
-    $draftitemid = $data->page['itemid'];
+    $draftitemid = $data->pdf['itemid'];
 
     $data->timemodified = time();
     $data->id           = $data->instance;
@@ -158,41 +158,41 @@ function page_update_instance($data, $mform) {
     $displayoptions['printlastmodified'] = $data->printlastmodified;
     $data->displayoptions = serialize($displayoptions);
 
-    $data->content       = $data->page['text'];
-    $data->contentformat = $data->page['format'];
+    $data->content       = $data->pdf['text'];
+    $data->contentformat = $data->pdf['format'];
 
-    $DB->update_record('page', $data);
+    $DB->update_record('pdf', $data);
 
     $context = context_module::instance($cmid);
     if ($draftitemid) {
-        $data->content = file_save_draft_area_files($draftitemid, $context->id, 'mod_page', 'content', 0, page_get_editor_options($context), $data->content);
-        $DB->update_record('page', $data);
+        $data->content = file_save_draft_area_files($draftitemid, $context->id, 'mod_pdf', 'content', 0, pdf_get_editor_options($context), $data->content);
+        $DB->update_record('pdf', $data);
     }
 
     $completiontimeexpected = !empty($data->completionexpected) ? $data->completionexpected : null;
-    \core_completion\api::update_completion_date_event($cmid, 'page', $data->id, $completiontimeexpected);
+    \core_completion\api::update_completion_date_event($cmid, 'pdf', $data->id, $completiontimeexpected);
 
     return true;
 }
 
 /**
- * Delete page instance.
+ * Delete pdf instance.
  * @param int $id
  * @return bool true
  */
-function page_delete_instance($id) {
+function pdf_delete_instance($id) {
     global $DB;
 
-    if (!$page = $DB->get_record('page', array('id'=>$id))) {
+    if (!$pdf = $DB->get_record('pdf', array('id'=>$id))) {
         return false;
     }
 
-    $cm = get_coursemodule_from_instance('page', $id);
-    \core_completion\api::update_completion_date_event($cm->id, 'page', $id, null);
+    $cm = get_coursemodule_from_instance('pdf', $id);
+    \core_completion\api::update_completion_date_event($cm->id, 'pdf', $id, null);
 
     // note: all context files are deleted automatically
 
-    $DB->delete_records('page', array('id'=>$page->id));
+    $DB->delete_records('pdf', array('id'=>$pdf->id));
 
     return true;
 }
@@ -205,31 +205,31 @@ function page_delete_instance($id) {
  * See {@link get_array_of_activities()} in course/lib.php
  *
  * @param stdClass $coursemodule
- * @return cached_cm_info Info to customise main page display
+ * @return cached_cm_info Info to customise main pdf display
  */
-function page_get_coursemodule_info($coursemodule) {
+function pdf_get_coursemodule_info($coursemodule) {
     global $CFG, $DB;
     require_once("$CFG->libdir/resourcelib.php");
 
-    if (!$page = $DB->get_record('page', array('id'=>$coursemodule->instance),
+    if (!$pdf = $DB->get_record('pdf', array('id'=>$coursemodule->instance),
             'id, name, display, displayoptions, intro, introformat')) {
         return NULL;
     }
 
     $info = new cached_cm_info();
-    $info->name = $page->name;
+    $info->name = $pdf->name;
 
     if ($coursemodule->showdescription) {
         // Convert intro to html. Do not filter cached version, filters run at display time.
-        $info->content = format_module_intro('page', $page, $coursemodule->id, false);
+        $info->content = format_module_intro('pdf', $pdf, $coursemodule->id, false);
     }
 
-    if ($page->display != RESOURCELIB_DISPLAY_POPUP) {
+    if ($pdf->display != RESOURCELIB_DISPLAY_POPUP) {
         return $info;
     }
 
-    $fullurl = "$CFG->wwwroot/mod/page/view.php?id=$coursemodule->id&amp;inpopup=1";
-    $options = empty($page->displayoptions) ? array() : unserialize($page->displayoptions);
+    $fullurl = "$CFG->wwwroot/mod/pdf/view.php?id=$coursemodule->id&amp;inpopup=1";
+    $options = empty($pdf->displayoptions) ? array() : unserialize($pdf->displayoptions);
     $width  = empty($options['popupwidth'])  ? 620 : $options['popupwidth'];
     $height = empty($options['popupheight']) ? 450 : $options['popupheight'];
     $wh = "width=$width,height=$height,toolbar=no,location=no,menubar=no,copyhistory=no,status=no,directories=no,scrollbars=yes,resizable=yes";
@@ -242,23 +242,23 @@ function page_get_coursemodule_info($coursemodule) {
 /**
  * Lists all browsable file areas
  *
- * @package  mod_page
+ * @package  mod_pdf
  * @category files
  * @param stdClass $course course object
  * @param stdClass $cm course module object
  * @param stdClass $context context object
  * @return array
  */
-function page_get_file_areas($course, $cm, $context) {
+function pdf_get_file_areas($course, $cm, $context) {
     $areas = array();
-    $areas['content'] = get_string('content', 'page');
+    $areas['content'] = get_string('content', 'pdf');
     return $areas;
 }
 
 /**
- * File browsing support for page module content area.
+ * File browsing support for pdf module content area.
  *
- * @package  mod_page
+ * @package  mod_pdf
  * @category files
  * @param stdClass $browser file browser instance
  * @param stdClass $areas file areas
@@ -271,7 +271,7 @@ function page_get_file_areas($course, $cm, $context) {
  * @param string $filename file name
  * @return file_info instance or null if not found
  */
-function page_get_file_info($browser, $areas, $course, $cm, $context, $filearea, $itemid, $filepath, $filename) {
+function pdf_get_file_info($browser, $areas, $course, $cm, $context, $filearea, $itemid, $filepath, $filename) {
     global $CFG;
 
     if (!has_capability('moodle/course:managefiles', $context)) {
@@ -286,27 +286,27 @@ function page_get_file_info($browser, $areas, $course, $cm, $context, $filearea,
         $filename = is_null($filename) ? '.' : $filename;
 
         $urlbase = $CFG->wwwroot.'/pluginfile.php';
-        if (!$storedfile = $fs->get_file($context->id, 'mod_page', 'content', 0, $filepath, $filename)) {
+        if (!$storedfile = $fs->get_file($context->id, 'mod_pdf', 'content', 0, $filepath, $filename)) {
             if ($filepath === '/' and $filename === '.') {
-                $storedfile = new virtual_root_file($context->id, 'mod_page', 'content', 0);
+                $storedfile = new virtual_root_file($context->id, 'mod_pdf', 'content', 0);
             } else {
                 // not found
                 return null;
             }
         }
-        require_once("$CFG->dirroot/mod/page/locallib.php");
-        return new page_content_file_info($browser, $context, $storedfile, $urlbase, $areas[$filearea], true, true, true, false);
+        require_once("$CFG->dirroot/mod/pdf/locallib.php");
+        return new pdf_content_file_info($browser, $context, $storedfile, $urlbase, $areas[$filearea], true, true, true, false);
     }
 
-    // note: page_intro handled in file_browser automatically
+    // note: pdf_intro handled in file_browser automatically
 
     return null;
 }
 
 /**
- * Serves the page files.
+ * Serves the pdf files.
  *
- * @package  mod_page
+ * @package  mod_pdf
  * @category files
  * @param stdClass $course course object
  * @param stdClass $cm course module object
@@ -317,7 +317,7 @@ function page_get_file_info($browser, $areas, $course, $cm, $context, $filearea,
  * @param array $options additional options affecting the file serving
  * @return bool false if file not found, does not return if found - just send the file
  */
-function page_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options=array()) {
+function pdf_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options=array()) {
     global $CFG, $DB;
     require_once("$CFG->libdir/resourcelib.php");
 
@@ -326,7 +326,7 @@ function page_pluginfile($course, $cm, $context, $filearea, $args, $forcedownloa
     }
 
     require_course_login($course, true, $cm);
-    if (!has_capability('mod/page:view', $context)) {
+    if (!has_capability('mod/pdf:view', $context)) {
         return false;
     }
 
@@ -338,44 +338,44 @@ function page_pluginfile($course, $cm, $context, $filearea, $args, $forcedownloa
     // $arg could be revision number or index.html
     $arg = array_shift($args);
     if ($arg == 'index.html' || $arg == 'index.htm') {
-        // serve page content
+        // serve pdf content
         $filename = $arg;
 
-        if (!$page = $DB->get_record('page', array('id'=>$cm->instance), '*', MUST_EXIST)) {
+        if (!$pdf = $DB->get_record('pdf', array('id'=>$cm->instance), '*', MUST_EXIST)) {
             return false;
         }
 
         // We need to rewrite the pluginfile URLs so the media filters can work.
-        $content = file_rewrite_pluginfile_urls($page->content, 'webservice/pluginfile.php', $context->id, 'mod_page', 'content',
-                                                $page->revision);
+        $content = file_rewrite_pluginfile_urls($pdf->content, 'webservice/pluginfile.php', $context->id, 'mod_pdf', 'content',
+                                                $pdf->revision);
         $formatoptions = new stdClass;
         $formatoptions->noclean = true;
         $formatoptions->overflowdiv = true;
         $formatoptions->context = $context;
-        $content = format_text($content, $page->contentformat, $formatoptions);
+        $content = format_text($content, $pdf->contentformat, $formatoptions);
 
         // Remove @@PLUGINFILE@@/.
         $options = array('reverse' => true);
-        $content = file_rewrite_pluginfile_urls($content, 'webservice/pluginfile.php', $context->id, 'mod_page', 'content',
-                                                $page->revision, $options);
+        $content = file_rewrite_pluginfile_urls($content, 'webservice/pluginfile.php', $context->id, 'mod_pdf', 'content',
+                                                $pdf->revision, $options);
         $content = str_replace('@@PLUGINFILE@@/', '', $content);
 
         send_file($content, $filename, 0, 0, true, true);
     } else {
         $fs = get_file_storage();
         $relativepath = implode('/', $args);
-        $fullpath = "/$context->id/mod_page/$filearea/0/$relativepath";
+        $fullpath = "/$context->id/mod_pdf/$filearea/0/$relativepath";
         if (!$file = $fs->get_file_by_hash(sha1($fullpath)) or $file->is_directory()) {
-            $page = $DB->get_record('page', array('id'=>$cm->instance), 'id, legacyfiles', MUST_EXIST);
-            if ($page->legacyfiles != RESOURCELIB_LEGACYFILES_ACTIVE) {
+            $pdf = $DB->get_record('pdf', array('id'=>$cm->instance), 'id, legacyfiles', MUST_EXIST);
+            if ($pdf->legacyfiles != RESOURCELIB_LEGACYFILES_ACTIVE) {
                 return false;
             }
-            if (!$file = resourcelib_try_file_migration('/'.$relativepath, $cm->id, $cm->course, 'mod_page', 'content', 0)) {
+            if (!$file = resourcelib_try_file_migration('/'.$relativepath, $cm->id, $cm->course, 'mod_pdf', 'content', 0)) {
                 return false;
             }
             //file migrate - update flag
-            $page->legacyfileslast = time();
-            $DB->update_record('page', $page);
+            $pdf->legacyfileslast = time();
+            $DB->update_record('pdf', $pdf);
         }
 
         // finally send the file
@@ -384,38 +384,38 @@ function page_pluginfile($course, $cm, $context, $filearea, $args, $forcedownloa
 }
 
 /**
- * Return a list of page types
- * @param string $pagetype current page type
+ * Return a list of pdf types
+ * @param string $pdftype current pdf type
  * @param stdClass $parentcontext Block's parent context
  * @param stdClass $currentcontext Current context of block
  */
-function page_page_type_list($pagetype, $parentcontext, $currentcontext) {
-    $module_pagetype = array('mod-page-*'=>get_string('page-mod-page-x', 'page'));
-    return $module_pagetype;
+function pdf_pdf_type_list($pdftype, $parentcontext, $currentcontext) {
+    $module_pdftype = array('mod-pdf-*'=>get_string('pdf-mod-pdf-x', 'pdf'));
+    return $module_pdftype;
 }
 
 /**
- * Export page resource contents
+ * Export pdf resource contents
  *
  * @return array of file content
  */
-function page_export_contents($cm, $baseurl) {
+function pdf_export_contents($cm, $baseurl) {
     global $CFG, $DB;
     $contents = array();
     $context = context_module::instance($cm->id);
 
-    $page = $DB->get_record('page', array('id'=>$cm->instance), '*', MUST_EXIST);
+    $pdf = $DB->get_record('pdf', array('id'=>$cm->instance), '*', MUST_EXIST);
 
-    // page contents
+    // pdf contents
     $fs = get_file_storage();
-    $files = $fs->get_area_files($context->id, 'mod_page', 'content', 0, 'sortorder DESC, id ASC', false);
+    $files = $fs->get_area_files($context->id, 'mod_pdf', 'content', 0, 'sortorder DESC, id ASC', false);
     foreach ($files as $fileinfo) {
         $file = array();
         $file['type']         = 'file';
         $file['filename']     = $fileinfo->get_filename();
         $file['filepath']     = $fileinfo->get_filepath();
         $file['filesize']     = $fileinfo->get_filesize();
-        $file['fileurl']      = file_encode_url("$CFG->wwwroot/" . $baseurl, '/'.$context->id.'/mod_page/content/'.$page->revision.$fileinfo->get_filepath().$fileinfo->get_filename(), true);
+        $file['fileurl']      = file_encode_url("$CFG->wwwroot/" . $baseurl, '/'.$context->id.'/mod_pdf/content/'.$pdf->revision.$fileinfo->get_filepath().$fileinfo->get_filename(), true);
         $file['timecreated']  = $fileinfo->get_timecreated();
         $file['timemodified'] = $fileinfo->get_timemodified();
         $file['sortorder']    = $fileinfo->get_sortorder();
@@ -430,22 +430,22 @@ function page_export_contents($cm, $baseurl) {
         $contents[] = $file;
     }
 
-    // page html conent
+    // pdf html conent
     $filename = 'index.html';
-    $pagefile = array();
-    $pagefile['type']         = 'file';
-    $pagefile['filename']     = $filename;
-    $pagefile['filepath']     = '/';
-    $pagefile['filesize']     = 0;
-    $pagefile['fileurl']      = file_encode_url("$CFG->wwwroot/" . $baseurl, '/'.$context->id.'/mod_page/content/' . $filename, true);
-    $pagefile['timecreated']  = null;
-    $pagefile['timemodified'] = $page->timemodified;
+    $pdffile = array();
+    $pdffile['type']         = 'file';
+    $pdffile['filename']     = $filename;
+    $pdffile['filepath']     = '/';
+    $pdffile['filesize']     = 0;
+    $pdffile['fileurl']      = file_encode_url("$CFG->wwwroot/" . $baseurl, '/'.$context->id.'/mod_pdf/content/' . $filename, true);
+    $pdffile['timecreated']  = null;
+    $pdffile['timemodified'] = $pdf->timemodified;
     // make this file as main file
-    $pagefile['sortorder']    = 1;
-    $pagefile['userid']       = null;
-    $pagefile['author']       = null;
-    $pagefile['license']      = null;
-    $contents[] = $pagefile;
+    $pdffile['sortorder']    = 1;
+    $pdffile['userid']       = null;
+    $pdffile['author']       = null;
+    $pdffile['license']      = null;
+    $contents[] = $pdffile;
 
     return $contents;
 }
@@ -454,10 +454,10 @@ function page_export_contents($cm, $baseurl) {
  * Register the ability to handle drag and drop file uploads
  * @return array containing details of the files / types the mod can handle
  */
-function page_dndupload_register() {
+function pdf_dndupload_register() {
     return array('types' => array(
-                     array('identifier' => 'text/html', 'message' => get_string('createpage', 'page')),
-                     array('identifier' => 'text', 'message' => get_string('createpage', 'page'))
+                     array('identifier' => 'text/html', 'message' => get_string('createpdf', 'pdf')),
+                     array('identifier' => 'text', 'message' => get_string('createpdf', 'pdf'))
                  ));
 }
 
@@ -466,7 +466,7 @@ function page_dndupload_register() {
  * @param object $uploadinfo details of the file / content that has been uploaded
  * @return int instance id of the newly created mod
  */
-function page_dndupload_handle($uploadinfo) {
+function pdf_dndupload_handle($uploadinfo) {
     // Gather the required info.
     $data = new stdClass();
     $data->course = $uploadinfo->course->id;
@@ -483,7 +483,7 @@ function page_dndupload_handle($uploadinfo) {
     $data->coursemodule = $uploadinfo->coursemodule;
 
     // Set the display options to the site defaults.
-    $config = get_config('page');
+    $config = get_config('pdf');
     $data->display = $config->display;
     $data->popupheight = $config->popupheight;
     $data->popupwidth = $config->popupwidth;
@@ -491,30 +491,30 @@ function page_dndupload_handle($uploadinfo) {
     $data->printintro = $config->printintro;
     $data->printlastmodified = $config->printlastmodified;
 
-    return page_add_instance($data, null);
+    return pdf_add_instance($data, null);
 }
 
 /**
  * Mark the activity completed (if required) and trigger the course_module_viewed event.
  *
- * @param  stdClass $page       page object
+ * @param  stdClass $pdf       pdf object
  * @param  stdClass $course     course object
  * @param  stdClass $cm         course module object
  * @param  stdClass $context    context object
  * @since Moodle 3.0
  */
-function page_view($page, $course, $cm, $context) {
+function pdf_view($pdf, $course, $cm, $context) {
 
     // Trigger course_module_viewed event.
     $params = array(
         'context' => $context,
-        'objectid' => $page->id
+        'objectid' => $pdf->id
     );
 
-    $event = \mod_page\event\course_module_viewed::create($params);
+    $event = \mod_pdf\event\course_module_viewed::create($params);
     $event->add_record_snapshot('course_modules', $cm);
     $event->add_record_snapshot('course', $course);
-    $event->add_record_snapshot('page', $page);
+    $event->add_record_snapshot('pdf', $pdf);
     $event->trigger();
 
     // Completion.
@@ -531,7 +531,7 @@ function page_view($page, $course, $cm, $context) {
  * @return stdClass an object with the different type of areas indicating if they were updated or not
  * @since Moodle 3.2
  */
-function page_check_updates_since(cm_info $cm, $from, $filter = array()) {
+function pdf_check_updates_since(cm_info $cm, $from, $filter = array()) {
     $updates = course_check_module_updates_since($cm, $from, array('content'), $filter);
     return $updates;
 }
@@ -546,7 +546,7 @@ function page_check_updates_since(cm_info $cm, $from, $filter = array()) {
  * @param \core_calendar\action_factory $factory
  * @return \core_calendar\local\event\entities\action_interface|null
  */
-function mod_page_core_calendar_provide_event_action(calendar_event $event,
+function mod_pdf_core_calendar_provide_event_action(calendar_event $event,
                                                       \core_calendar\action_factory $factory, $userid = 0) {
     global $USER;
 
@@ -554,7 +554,7 @@ function mod_page_core_calendar_provide_event_action(calendar_event $event,
         $userid = $USER->id;
     }
 
-    $cm = get_fast_modinfo($event->courseid, $userid)->instances['page'][$event->instance];
+    $cm = get_fast_modinfo($event->courseid, $userid)->instances['pdf'][$event->instance];
 
     $completion = new \completion_info($cm->get_course());
 
@@ -566,7 +566,7 @@ function mod_page_core_calendar_provide_event_action(calendar_event $event,
 
     return $factory->create_instance(
         get_string('view'),
-        new \moodle_url('/mod/page/view.php', ['id' => $cm->id]),
+        new \moodle_url('/mod/pdf/view.php', ['id' => $cm->id]),
         1,
         true
     );
@@ -579,8 +579,8 @@ function mod_page_core_calendar_provide_event_action(calendar_event $event,
  * @param  array  $args The path (the part after the filearea and before the filename).
  * @return array The itemid and the filepath inside the $args path, for the defined filearea.
  */
-function mod_page_get_path_from_pluginfile(string $filearea, array $args) : array {
-    // Page never has an itemid (the number represents the revision but it's not stored in database).
+function mod_pdf_get_path_from_pluginfile(string $filearea, array $args) : array {
+    // pdf never has an itemid (the number represents the revision but it's not stored in database).
     array_shift($args);
 
     // Get the filepath.

@@ -15,21 +15,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Search area for mod_page activities.
+ * Search area for mod_pdf activities.
  *
- * @package    mod_page
+ * @package    mod_pdf
  * @copyright  2015 David Monllao {@link http://www.davidmonllao.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_page\search;
+namespace mod_pdf\search;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Search area for mod_page activities.
+ * Search area for mod_pdf activities.
  *
- * @package    mod_page
+ * @package    mod_pdf
  * @copyright  2015 David Monllao {@link http://www.davidmonllao.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -38,7 +38,7 @@ class activity extends \core_search\base_activity {
     /**
      * Returns the document associated with this activity.
      *
-     * Overwriting base_activity method as page contents field is required,
+     * Overwriting base_activity method as pdf contents field is required,
      * description field is not.
      *
      * @param stdClass $record

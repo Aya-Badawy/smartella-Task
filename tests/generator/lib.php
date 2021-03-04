@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * mod_page data generator
+ * mod_pdf data generator
  *
- * @package    mod_page
+ * @package    mod_pdf
  * @category   test
  * @copyright  2012 Petr Skoda {@link http://skodak.org}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -27,14 +27,14 @@ defined('MOODLE_INTERNAL') || die();
 
 
 /**
- * Page module data generator class
+ * pdf module data generator class
  *
- * @package    mod_page
+ * @package    mod_pdf
  * @category   test
  * @copyright  2012 Petr Skoda {@link http://skodak.org}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class mod_page_generator extends testing_module_generator {
+class mod_pdf_generator extends testing_module_generator {
 
     public function create_instance($record = null, array $options = null) {
         global $CFG;
@@ -43,7 +43,7 @@ class mod_page_generator extends testing_module_generator {
         $record = (object)(array)$record;
 
         if (!isset($record->content)) {
-            $record->content = 'Test page content';
+            $record->content = 'Test pdf content';
         }
         if (!isset($record->contentformat)) {
             $record->contentformat = FORMAT_MOODLE;

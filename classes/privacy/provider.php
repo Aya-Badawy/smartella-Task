@@ -15,18 +15,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Privacy Subsystem implementation for mod_page.
+ * Privacy Subsystem implementation for mod_pdf.
  *
- * @package    mod_page
+ * @package    mod_pdf
  * @copyright  2018 Zig Tan <zig@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-namespace mod_page\privacy;
+namespace mod_pdf\privacy;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * The mod_page module does not store any data.
+ * The mod_pdf module does not store any data.
  *
  * @copyright  2018 Zig Tan <zig@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

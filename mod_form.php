@@ -16,9 +16,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Page configuration form
+ * pdf configuration form
  *
- * @package mod_page
+ * @package mod_pdf
  * @copyright  2009 Petr Skoda (http://skodak.org)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -26,16 +26,16 @@
 defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->dirroot.'/course/moodleform_mod.php');
-require_once($CFG->dirroot.'/mod/page/locallib.php');
+require_once($CFG->dirroot.'/mod/pdf/locallib.php');
 require_once($CFG->libdir.'/filelib.php');
 
-class mod_page_mod_form extends moodleform_mod {
+class mod_pdf_mod_form extends moodleform_mod {
     function definition() {
         global $CFG, $DB;
 
         $mform = $this->_form;
 
-        $config = get_config('page');
+        $config = get_config('pdf');
 
         //-------------------------------------------------------
         $mform->addElement('header', 'general', get_string('general', 'form'));
@@ -50,9 +50,9 @@ class mod_page_mod_form extends moodleform_mod {
         $this->standard_intro_elements();
 
         //-------------------------------------------------------
-        $mform->addElement('header', 'contentsection', get_string('contentheader', 'page'));
-        $mform->addElement('editor', 'page', get_string('content', 'page'), null, page_get_editor_options($this->context));
-        $mform->addRule('page', get_string('required'), 'required', null, 'client');
+        $mform->addElement('header', 'contentsection', get_string('contentheader', 'pdf'));
+        $mform->addElement('editor', 'pdf', get_string('content', 'pdf'), null, pdf_get_editor_options($this->context));
+        $mform->addRule('pdf', get_string('required'), 'required', null, 'client');
 
         //-------------------------------------------------------
         $mform->addElement('header', 'appearancehdr', get_string('appearance'));
@@ -68,19 +68,19 @@ class mod_page_mod_form extends moodleform_mod {
             reset($options);
             $mform->setDefault('display', key($options));
         } else {
-            $mform->addElement('select', 'display', get_string('displayselect', 'page'), $options);
+            $mform->addElement('select', 'display', get_string('displayselect', 'pdf'), $options);
             $mform->setDefault('display', $config->display);
         }
 
         if (array_key_exists(RESOURCELIB_DISPLAY_POPUP, $options)) {
-            $mform->addElement('text', 'popupwidth', get_string('popupwidth', 'page'), array('size'=>3));
+            $mform->addElement('text', 'popupwidth', get_string('popupwidth', 'pdf'), array('size'=>3));
             if (count($options) > 1) {
                 $mform->hideIf('popupwidth', 'display', 'noteq', RESOURCELIB_DISPLAY_POPUP);
             }
             $mform->setType('popupwidth', PARAM_INT);
             $mform->setDefault('popupwidth', $config->popupwidth);
 
-            $mform->addElement('text', 'popupheight', get_string('popupheight', 'page'), array('size'=>3));
+            $mform->addElement('text', 'popupheight', get_string('popupheight', 'pdf'), array('size'=>3));
             if (count($options) > 1) {
                 $mform->hideIf('popupheight', 'display', 'noteq', RESOURCELIB_DISPLAY_POPUP);
             }
@@ -88,18 +88,18 @@ class mod_page_mod_form extends moodleform_mod {
             $mform->setDefault('popupheight', $config->popupheight);
         }
 
-        $mform->addElement('advcheckbox', 'printheading', get_string('printheading', 'page'));
+        $mform->addElement('advcheckbox', 'printheading', get_string('printheading', 'pdf'));
         $mform->setDefault('printheading', $config->printheading);
-        $mform->addElement('advcheckbox', 'printintro', get_string('printintro', 'page'));
+        $mform->addElement('advcheckbox', 'printintro', get_string('printintro', 'pdf'));
         $mform->setDefault('printintro', $config->printintro);
-        $mform->addElement('advcheckbox', 'printlastmodified', get_string('printlastmodified', 'page'));
+        $mform->addElement('advcheckbox', 'printlastmodified', get_string('printlastmodified', 'pdf'));
         $mform->setDefault('printlastmodified', $config->printlastmodified);
 
         // add legacy files flag only if used
         if (isset($this->current->legacyfiles) and $this->current->legacyfiles != RESOURCELIB_LEGACYFILES_NO) {
-            $options = array(RESOURCELIB_LEGACYFILES_DONE   => get_string('legacyfilesdone', 'page'),
-                             RESOURCELIB_LEGACYFILES_ACTIVE => get_string('legacyfilesactive', 'page'));
-            $mform->addElement('select', 'legacyfiles', get_string('legacyfiles', 'page'), $options);
+            $options = array(RESOURCELIB_LEGACYFILES_DONE   => get_string('legacyfilesdone', 'pdf'),
+                             RESOURCELIB_LEGACYFILES_ACTIVE => get_string('legacyfilesactive', 'pdf'));
+            $mform->addElement('select', 'legacyfiles', get_string('legacyfiles', 'pdf'), $options);
             $mform->setAdvanced('legacyfiles', 1);
         }
 
@@ -123,11 +123,11 @@ class mod_page_mod_form extends moodleform_mod {
      **/
     public function data_preprocessing(&$defaultvalues) {
         if ($this->current->instance) {
-            $draftitemid = file_get_submitted_draft_itemid('page');
-            $defaultvalues['page']['format'] = $defaultvalues['contentformat'];
-            $defaultvalues['page']['text']   = file_prepare_draft_area($draftitemid, $this->context->id, 'mod_page',
-                    'content', 0, page_get_editor_options($this->context), $defaultvalues['content']);
-            $defaultvalues['page']['itemid'] = $draftitemid;
+            $draftitemid = file_get_submitted_draft_itemid('pdf');
+            $defaultvalues['pdf']['format'] = $defaultvalues['contentformat'];
+            $defaultvalues['pdf']['text']   = file_prepare_draft_area($draftitemid, $this->context->id, 'mod_pdf',
+                    'content', 0, pdf_get_editor_options($this->context), $defaultvalues['content']);
+            $defaultvalues['pdf']['itemid'] = $draftitemid;
         }
         if (!empty($defaultvalues['displayoptions'])) {
             $displayoptions = unserialize($defaultvalues['displayoptions']);

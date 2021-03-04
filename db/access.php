@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Page module capability definition
+ * pdf module capability definition
  *
- * @package    mod_page
+ * @package    mod_pdf
  * @copyright  2009 Petr Skoda (http://skodak.org)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die;
 
 $capabilities = array(
-    'mod/page:view' => array(
+    'mod/pdf:view' => array(
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => array(
@@ -34,7 +34,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/page:addinstance' => array(
+    'mod/pdf:addinstance' => array(
         'riskbitmask' => RISK_XSS,
 
         'captype' => 'write',
@@ -48,7 +48,7 @@ $capabilities = array(
 
 
 /* TODO: review public portfolio API first!
-    'mod/page:portfolioexport' => array(
+    'mod/pdf:portfolioexport' => array(
 
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,

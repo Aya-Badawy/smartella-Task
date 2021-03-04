@@ -17,11 +17,11 @@
 /**
  * Content export definition.
  *
- * @package     mod_page
+ * @package     mod_pdf
  * @copyright   2020 Andrew Nicols <andrew@nicols.co.uk>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-namespace mod_page\content;
+namespace mod_pdf\content;
 
 use core\content\export\exportable_items\exportable_textarea;
 use core\content\export\exporters\abstract_mod_exporter;
@@ -35,7 +35,7 @@ use core\content\export\exporters\abstract_mod_exporter;
 class exporter extends abstract_mod_exporter {
 
     /**
-     * Get the exportable items for mod_page.
+     * Get the exportable items for mod_pdf.
      *
      * @param   bool $includeuserdata Whether to include user data, in addition to shared content.
      * @return  \core\content\export\exportable_item[]
@@ -46,9 +46,9 @@ class exporter extends abstract_mod_exporter {
         $contentitems[] = new exportable_textarea(
             $this->get_context(),
             $this->get_component(),
-            get_string('content', 'mod_page'),
+            get_string('content', 'mod_pdf'),
 
-            // Content is in the 'content' field of the 'page' table.
+            // Content is in the 'content' field of the 'pdf' table.
             $this->get_modname(),
             'content',
 
@@ -56,7 +56,7 @@ class exporter extends abstract_mod_exporter {
             $this->cm->instance,
             'contentformat',
 
-            // The mod_page content has files in 'content/0', and the itemid (0) is present in the URL.
+            // The mod_pdf content has files in 'content/0', and the itemid (0) is present in the URL.
             'content',
             0,
             0

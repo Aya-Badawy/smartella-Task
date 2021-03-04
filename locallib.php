@@ -16,9 +16,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Private page module utility functions
+ * Private pdf module utility functions
  *
- * @package mod_page
+ * @package mod_pdf
  * @copyright  2009 Petr Skoda (http://skodak.org)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -27,13 +27,13 @@ defined('MOODLE_INTERNAL') || die;
 
 require_once("$CFG->libdir/filelib.php");
 require_once("$CFG->libdir/resourcelib.php");
-require_once("$CFG->dirroot/mod/page/lib.php");
+require_once("$CFG->dirroot/mod/pdf/lib.php");
 
 
 /**
  * File browsing support class
  */
-class page_content_file_info extends file_info_stored {
+class pdf_content_file_info extends file_info_stored {
     public function get_parent() {
         if ($this->lf->get_filepath() === '/' and $this->lf->get_filename() === '.') {
             return $this->browser->get_file_info($this->context);
@@ -48,7 +48,7 @@ class page_content_file_info extends file_info_stored {
     }
 }
 
-function page_get_editor_options($context) {
+function pdf_get_editor_options($context) {
     global $CFG;
     return array('subdirs'=>1, 'maxbytes'=>$CFG->maxbytes, 'maxfiles'=>-1, 'changeformat'=>1, 'context'=>$context, 'noclean'=>1, 'trusttext'=>0);
 }

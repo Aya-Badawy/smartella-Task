@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * External mod_page functions unit tests
+ * External mod_pdf functions unit tests
  *
- * @package    mod_page
+ * @package    mod_pdf
  * @category   external
  * @copyright  2015 Juan Leyva <juan@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -31,34 +31,34 @@ global $CFG;
 require_once($CFG->dirroot . '/webservice/tests/helpers.php');
 
 /**
- * External mod_page functions unit tests
+ * External mod_pdf functions unit tests
  *
- * @package    mod_page
+ * @package    mod_pdf
  * @category   external
  * @copyright  2015 Juan Leyva <juan@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since      Moodle 3.0
  */
-class mod_page_external_testcase extends externallib_advanced_testcase {
+class mod_pdf_external_testcase extends externallib_advanced_testcase {
 
     /**
-     * Test view_page
+     * Test view_pdf
      */
-    public function test_view_page() {
+    public function test_view_pdf() {
         global $DB;
 
         $this->resetAfterTest(true);
 
         // Setup test data.
         $course = $this->getDataGenerator()->create_course();
-        $page = $this->getDataGenerator()->create_module('page', array('course' => $course->id));
-        $context = context_module::instance($page->cmid);
-        $cm = get_coursemodule_from_instance('page', $page->id);
+        $pdf = $this->getDataGenerator()->create_module('pdf', array('course' => $course->id));
+        $context = context_module::instance($pdf->cmid);
+        $cm = get_coursemodule_from_instance('pdf', $pdf->id);
 
         // Test invalid instance id.
         try {
-            mod_page_external::view_page(0);
-            $this->fail('Exception expected due to invalid mod_page instance id.');
+            mod_pdf_external::view_pdf(0);
+            $this->fail('Exception expected due to invalid mod_pdf instance id.');
         } catch (moodle_exception $e) {
             $this->assertEquals('invalidrecord', $e->errorcode);
         }
@@ -67,7 +67,7 @@ class mod_page_external_testcase extends externallib_advanced_testcase {
         $user = self::getDataGenerator()->create_user();
         $this->setUser($user);
         try {
-            mod_page_external::view_page($page->id);
+            mod_pdf_external::view_pdf($pdf->id);
             $this->fail('Exception expected due to not enrolled user.');
         } catch (moodle_exception $e) {
             $this->assertEquals('requireloginerror', $e->errorcode);
@@ -80,30 +80,30 @@ class mod_page_external_testcase extends externallib_advanced_testcase {
         // Trigger and capture the event.
         $sink = $this->redirectEvents();
 
-        $result = mod_page_external::view_page($page->id);
-        $result = external_api::clean_returnvalue(mod_page_external::view_page_returns(), $result);
+        $result = mod_pdf_external::view_pdf($pdf->id);
+        $result = external_api::clean_returnvalue(mod_pdf_external::view_pdf_returns(), $result);
 
         $events = $sink->get_events();
         $this->assertCount(1, $events);
         $event = array_shift($events);
 
         // Checking that the event contains the expected values.
-        $this->assertInstanceOf('\mod_page\event\course_module_viewed', $event);
+        $this->assertInstanceOf('\mod_pdf\event\course_module_viewed', $event);
         $this->assertEquals($context, $event->get_context());
-        $moodlepage = new \moodle_url('/mod/page/view.php', array('id' => $cm->id));
-        $this->assertEquals($moodlepage, $event->get_url());
+        $moodlepdf = new \moodle_url('/mod/pdf/view.php', array('id' => $cm->id));
+        $this->assertEquals($moodlepdf, $event->get_url());
         $this->assertEventContextNotUsed($event);
         $this->assertNotEmpty($event->get_name());
 
         // Test user with no capabilities.
         // We need a explicit prohibit since this capability is only defined in authenticated user and guest roles.
-        assign_capability('mod/page:view', CAP_PROHIBIT, $studentrole->id, $context->id);
+        assign_capability('mod/pdf:view', CAP_PROHIBIT, $studentrole->id, $context->id);
         // Empty all the caches that may be affected by this change.
         accesslib_clear_all_caches_for_unit_testing();
         course_modinfo::clear_instance_cache();
 
         try {
-            mod_page_external::view_page($page->id);
+            mod_pdf_external::view_pdf($pdf->id);
             $this->fail('Exception expected due to missing capability.');
         } catch (moodle_exception $e) {
             $this->assertEquals('requireloginerror', $e->errorcode);
@@ -112,9 +112,9 @@ class mod_page_external_testcase extends externallib_advanced_testcase {
     }
 
     /**
-     * Test test_mod_page_get_pages_by_courses
+     * Test test_mod_pdf_get_pdfs_by_courses
      */
-    public function test_mod_page_get_pages_by_courses() {
+    public function test_mod_pdf_get_pdfs_by_courses() {
         global $DB;
 
         $this->resetAfterTest(true);
@@ -126,15 +126,15 @@ class mod_page_external_testcase extends externallib_advanced_testcase {
         $studentrole = $DB->get_record('role', array('shortname' => 'student'));
         $this->getDataGenerator()->enrol_user($student->id, $course1->id, $studentrole->id);
 
-        // First page.
+        // First pdf.
         $record = new stdClass();
         $record->course = $course1->id;
-        $page1 = self::getDataGenerator()->create_module('page', $record);
+        $pdf1 = self::getDataGenerator()->create_module('pdf', $record);
 
-        // Second page.
+        // Second pdf.
         $record = new stdClass();
         $record->course = $course2->id;
-        $page2 = self::getDataGenerator()->create_module('page', $record);
+        $pdf2 = self::getDataGenerator()->create_module('pdf', $record);
 
         // Execute real Moodle enrolment as we'll call unenrol() method on the instance later.
         $enrol = enrol_get_plugin('manual');
@@ -149,7 +149,7 @@ class mod_page_external_testcase extends externallib_advanced_testcase {
 
         self::setUser($student);
 
-        $returndescription = mod_page_external::get_pages_by_courses_returns();
+        $returndescription = mod_pdf_external::get_pdfs_by_courses_returns();
 
         // Create what we expect to be returned when querying the two courses.
         $expectedfields = array('id', 'coursemodule', 'course', 'name', 'intro', 'introformat', 'introfiles',
@@ -157,51 +157,51 @@ class mod_page_external_testcase extends externallib_advanced_testcase {
                                 'displayoptions', 'revision', 'timemodified', 'section', 'visible', 'groupmode', 'groupingid');
 
         // Add expected coursemodule and data.
-        $page1->coursemodule = $page1->cmid;
-        $page1->introformat = 1;
-        $page1->contentformat = 1;
-        $page1->section = 0;
-        $page1->visible = true;
-        $page1->groupmode = 0;
-        $page1->groupingid = 0;
-        $page1->introfiles = [];
-        $page1->contentfiles = [];
+        $pdf1->coursemodule = $pdf1->cmid;
+        $pdf1->introformat = 1;
+        $pdf1->contentformat = 1;
+        $pdf1->section = 0;
+        $pdf1->visible = true;
+        $pdf1->groupmode = 0;
+        $pdf1->groupingid = 0;
+        $pdf1->introfiles = [];
+        $pdf1->contentfiles = [];
 
-        $page2->coursemodule = $page2->cmid;
-        $page2->introformat = 1;
-        $page2->contentformat = 1;
-        $page2->section = 0;
-        $page2->visible = true;
-        $page2->groupmode = 0;
-        $page2->groupingid = 0;
-        $page2->introfiles = [];
-        $page2->contentfiles = [];
+        $pdf2->coursemodule = $pdf2->cmid;
+        $pdf2->introformat = 1;
+        $pdf2->contentformat = 1;
+        $pdf2->section = 0;
+        $pdf2->visible = true;
+        $pdf2->groupmode = 0;
+        $pdf2->groupingid = 0;
+        $pdf2->introfiles = [];
+        $pdf2->contentfiles = [];
 
         foreach ($expectedfields as $field) {
-            $expected1[$field] = $page1->{$field};
-            $expected2[$field] = $page2->{$field};
+            $expected1[$field] = $pdf1->{$field};
+            $expected2[$field] = $pdf2->{$field};
         }
 
-        $expectedpages = array($expected2, $expected1);
+        $expectedpdfs = array($expected2, $expected1);
 
         // Call the external function passing course ids.
-        $result = mod_page_external::get_pages_by_courses(array($course2->id, $course1->id));
+        $result = mod_pdf_external::get_pdfs_by_courses(array($course2->id, $course1->id));
         $result = external_api::clean_returnvalue($returndescription, $result);
 
-        $this->assertEquals($expectedpages, $result['pages']);
+        $this->assertEquals($expectedpdfs, $result['pdfs']);
         $this->assertCount(0, $result['warnings']);
 
         // Call the external function without passing course id.
-        $result = mod_page_external::get_pages_by_courses();
+        $result = mod_pdf_external::get_pdfs_by_courses();
         $result = external_api::clean_returnvalue($returndescription, $result);
-        $this->assertEquals($expectedpages, $result['pages']);
+        $this->assertEquals($expectedpdfs, $result['pdfs']);
         $this->assertCount(0, $result['warnings']);
 
         // Add a file to the intro.
         $filename = "file.txt";
         $filerecordinline = array(
-            'contextid' => context_module::instance($page2->cmid)->id,
-            'component' => 'mod_page',
+            'contextid' => context_module::instance($pdf2->cmid)->id,
+            'component' => 'mod_pdf',
             'filearea'  => 'intro',
             'itemid'    => 0,
             'filepath'  => '/',
@@ -211,23 +211,23 @@ class mod_page_external_testcase extends externallib_advanced_testcase {
         $timepost = time();
         $fs->create_file_from_string($filerecordinline, 'image contents (not really)');
 
-        $result = mod_page_external::get_pages_by_courses(array($course2->id, $course1->id));
+        $result = mod_pdf_external::get_pdfs_by_courses(array($course2->id, $course1->id));
         $result = external_api::clean_returnvalue($returndescription, $result);
 
-        $this->assertCount(1, $result['pages'][0]['introfiles']);
-        $this->assertEquals($filename, $result['pages'][0]['introfiles'][0]['filename']);
+        $this->assertCount(1, $result['pdfs'][0]['introfiles']);
+        $this->assertEquals($filename, $result['pdfs'][0]['introfiles'][0]['filename']);
 
         // Unenrol user from second course.
         $enrol->unenrol_user($instance2, $student->id);
-        array_shift($expectedpages);
+        array_shift($expectedpdfs);
 
         // Call the external function without passing course id.
-        $result = mod_page_external::get_pages_by_courses();
+        $result = mod_pdf_external::get_pdfs_by_courses();
         $result = external_api::clean_returnvalue($returndescription, $result);
-        $this->assertEquals($expectedpages, $result['pages']);
+        $this->assertEquals($expectedpdfs, $result['pdfs']);
 
         // Call for the second course we unenrolled the user from, expected warning.
-        $result = mod_page_external::get_pages_by_courses(array($course2->id));
+        $result = mod_pdf_external::get_pdfs_by_courses(array($course2->id));
         $this->assertCount(1, $result['warnings']);
         $this->assertEquals('1', $result['warnings'][0]['warningcode']);
         $this->assertEquals($course2->id, $result['warnings'][0]['itemid']);
