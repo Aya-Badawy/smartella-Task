@@ -15,16 +15,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Page module version information
+ * Version information
  *
- * @package mod_page
- * @copyright  2009 Petr Skoda (http://skodak.org)
+ * @copyright  forked from moodle and edited by ayaahmed
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2020110900;       // The current module version (Date: YYYYMMDDXX)
-$plugin->requires  = 2020110300;    // Requires this Moodle version
-$plugin->component = 'mod_page';       // Full name of the plugin (used for diagnostics)
-$plugin->cron      = 0;
+$plugin->version   = 2019123001;     // The current module version (Date: YYYYMMDDXX)
+$plugin->requires  = 2019051100;    // Requires this Moodle version
+$plugin->component = 'mod_pdf'; // Full name of the plugin (used for diagnostics)

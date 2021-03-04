@@ -15,28 +15,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * pdf module capability definition
+ * Capability definitions for the pdf module.
+ *
+ * For naming conventions, see lib/db/access.php.
  *
  * @package    mod_pdf
- * @copyright  2009 Petr Skoda (http://skodak.org)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  forked from moodle and edited by ayaahmed 
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or late
  */
 
-defined('MOODLE_INTERNAL') || die;
+defined('MOODLE_INTERNAL') || die();
 
 $capabilities = array(
-    'mod/pdf:view' => array(
-        'captype' => 'read',
-        'contextlevel' => CONTEXT_MODULE,
-        'archetypes' => array(
-            'guest' => CAP_ALLOW,
-            'user' => CAP_ALLOW,
-        )
-    ),
 
     'mod/pdf:addinstance' => array(
         'riskbitmask' => RISK_XSS,
-
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
         'archetypes' => array(
@@ -46,16 +39,15 @@ $capabilities = array(
         'clonepermissionsfrom' => 'moodle/course:manageactivities'
     ),
 
-
-/* TODO: review public portfolio API first!
-    'mod/pdf:portfolioexport' => array(
-
-        'captype' => 'read',
-        'contextlevel' => CONTEXT_MODULE,
-        'archetypes' => array(
-            'teacher' => CAP_ALLOW,
-            'editingteacher' => CAP_ALLOW,
-        )
-    ),
-*/
+   'mod/pdf:view' => array(
+    'captype' => 'read',
+    'contextlevel' => CONTEXT_MODULE,
+    'archetypes' => array(
+        'guest' => CAP_ALLOW,
+        'student' => CAP_ALLOW,
+        'teacher' => CAP_ALLOW,
+        'editingteacher' => CAP_ALLOW,
+        'manager' => CAP_ALLOW
+    )
+    )
 );
