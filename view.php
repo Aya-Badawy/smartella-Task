@@ -3,10 +3,12 @@ require('../../config.php');
 require_once($CFG->dirroot.'/mod/pdf/lib.php');
 require_once($CFG->dirroot.'/mod/pdf/locallib.php');
 require_once($CFG->libdir.'/completionlib.php');
+require_once('private/edit_iframe_add_page.php');
 
 $id      = optional_param('id', 0, PARAM_INT); // Course Module ID
 $p       = optional_param('p', 0, PARAM_INT);  // pdf instance ID
 $inpopup = optional_param('inpopup', 0, PARAM_BOOL);
+$page=optional_param('page', 0, PARAM_INT); // to open pdf in iframe on specific page.
 
 if ($p) {
     if (!$pdf = $DB->get_record('pdf', array('id'=>$p))) {
@@ -55,6 +57,10 @@ if (!empty($options['printintro'])) {
         echo $OUTPUT->box_end();
     }
 }
+if($page){
+  $pdf->content=edit_iframe_link($pdf->content,$page);
+}
+
 
 $content = file_rewrite_pluginfile_urls($pdf->content, 'pluginfile.php', $context->id, 'mod_pdf', 'content', $pdf->revision);
 $formatoptions = new stdClass;
